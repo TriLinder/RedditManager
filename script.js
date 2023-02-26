@@ -1,11 +1,22 @@
 let config = {};
 let stage = null;
 
+let parameters = {};
+
 async function getJson(url, options={}) {
     let object = await fetch(url, options);
     let json = await object.json();
 
     return json
+}
+
+async function authenticatedRequest(url) {
+    options = {
+        headers: {"Authorization": `Bearer ${parameters["access_token"]}`}
+    }
+
+    let json = await getJson(url, options);
+    return json;
 }
 
 async function loadConfig() {
@@ -19,6 +30,9 @@ async function setStage() {
             break;
         case "wait":
             document.getElementById("wait_div").style.display = "block";
+
+            parseUrlParameters();
+
             break;
     }
 }
@@ -32,6 +46,13 @@ async function findInitialStage() {
     }
 
     setStage();
+}
+
+function parseUrlParameters() {
+    location.hash.split("#")[1].split("&").forEach(
+    function(parameter) {
+        parameters[parameter.split("=")[0]] = parameter.split("=")[1];
+    });
 }
 
 function generateAuthUrl() {
