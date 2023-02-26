@@ -8,9 +8,16 @@
     <title>RedditManager</title>
   </head>
   <body>
-    <div class="center">
+    <div id="start_div" style="display: none;" class="center">
         <h1>Sign into Reddit</h1>
         <button class="btn btn-primary btn-sm" onclick="signInButton()">Sign in</button>
+    </div>
+
+    <div id="wait_div" style="display: none;" class="center">
+        <h1>Please wait..</h1>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
     <script src="/script.js"></script>

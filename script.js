@@ -1,4 +1,5 @@
 let config = {};
+let stage = null;
 
 async function getJson(url, options={}) {
     let object = await fetch(url, options);
@@ -9,6 +10,28 @@ async function getJson(url, options={}) {
 
 async function loadConfig() {
     config = await getJson("/config.json");
+}
+
+async function setStage() {
+    switch(stage) {
+        case "start":
+            document.getElementById("start_div").style.display = "block";
+            break;
+        case "wait":
+            document.getElementById("wait_div").style.display = "block";
+            break;
+    }
+}
+
+async function findInitialStage() {
+    if (location.hash == "") {
+        stage = "start";
+    }
+    else {
+        stage = "wait";
+    }
+
+    setStage();
 }
 
 function generateAuthUrl() {
@@ -28,5 +51,5 @@ function signInButton() {
 
 window.onload = async function () {
     await loadConfig();
-    console.log(config["client_id"]);
+    findInitialStage();
 }
