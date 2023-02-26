@@ -117,17 +117,37 @@ async function downloadInfo() {
     // Download subreddits
     document.getElementById("processing_waiting_text").textContent = "Processing subreddits ";
     document.getElementById("listing_counter").textContent = "(0)";
-    //subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber", updateDomListingCounter=true);
+    subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber", updateDomListingCounter=true);
 
     // Download saved
     document.getElementById("processing_waiting_text").textContent = "Processing saved ";
     document.getElementById("listing_counter").textContent = "(0)";
-    //saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`, updateDomListingCounter=true);
+    saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`, updateDomListingCounter=true);
 
     // Download hidden
     document.getElementById("processing_waiting_text").textContent = "Processing hidden ";
     document.getElementById("listing_counter").textContent = "(0)";
-    //hidden = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/hidden`, updateDomListingCounter=true);
+    hidden = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/hidden`, updateDomListingCounter=true);
+}
+
+function generateDataJson() {
+    return {"user": user, "time": Math.round(Date.now() / 1000), "version": config["version"], "data": {"subreddits": subreddits, "saved": saved, "hidden": hidden}};
+}
+
+function downloadStringAsFile(string, fileName) {
+    const blob = new Blob([string], {type: "text/plain"});
+    const hyperlink = document.createElement("a");
+
+    hyperlink.download = fileName;
+    hyperlink.href = URL.createObjectURL(blob);
+    hyperlink.click();
+}
+
+function saveToDiskButton() {
+    const dataString = JSON.stringify(generateDataJson());
+    const fileName = `${user.name}_${Math.round(Date.now() / 1000)}.json`;
+
+    downloadStringAsFile(dataString, fileName);
 }
 
 function generateAuthUrl() {
