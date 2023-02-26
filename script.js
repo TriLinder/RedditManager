@@ -6,6 +6,7 @@ let parameters = {};
 let user = {};
 let subreddits = [];
 let saved = [];
+let hidden = [];
 
 async function getJson(url, options={}) {
     let object = await fetch(url, options);
@@ -55,15 +56,31 @@ async function loadConfig() {
 }
 
 async function setStage() {
+    document.getElementById("start_div").style.display = "none";
+    document.getElementById("wait_div").style.display = "none";
+    document.getElementById("overview_div").style.display = "none";
+    
     switch(stage) {
         case "start":
             document.getElementById("start_div").style.display = "block";
             break;
+        
         case "wait":
             document.getElementById("wait_div").style.display = "block";
 
             parseUrlParameters();
-            downloadInfo();
+            await downloadInfo();
+            
+            stage = "overview";
+            setStage();
+
+            break;
+
+        case "overview":
+            document.getElementById("overview_div").style.display = "block";
+
+            document.getElementById("overview_title").textContent = `Welcome, ${user.name}!`;
+            document.getElementById("overview_loaded_count").textContent = `Loaded ${subreddits.length} subreddits, ${saved.length} saved and ${hidden.length} hidden.`;
 
             break;
     }
@@ -93,19 +110,24 @@ function parseUrlParameters() {
 
 async function downloadInfo() {
     // Download user
-    document.getElementById("processing_waiting_text").textContent = "Downloading user info";
+    document.getElementById("processing_waiting_text").textContent = "Processing user info";
     document.getElementById("listing_counter").textContent = "";
     user = await authenticatedRequest("https://oauth.reddit.com/api/v1/me");
 
     // Download subreddits
     document.getElementById("processing_waiting_text").textContent = "Processing subreddits ";
     document.getElementById("listing_counter").textContent = "(0)";
-    subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber", updateDomListingCounter=true);
+    //subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber", updateDomListingCounter=true);
 
     // Download saved
     document.getElementById("processing_waiting_text").textContent = "Processing saved ";
     document.getElementById("listing_counter").textContent = "(0)";
-    saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`, updateDomListingCounter=true);
+    //saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`, updateDomListingCounter=true);
+
+    // Download hidden
+    document.getElementById("processing_waiting_text").textContent = "Processing hidden ";
+    document.getElementById("listing_counter").textContent = "(0)";
+    //hidden = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/hidden`, updateDomListingCounter=true);
 }
 
 function generateAuthUrl() {
