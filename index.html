@@ -8,8 +8,10 @@
     <title>RedditManager</title>
   </head>
   <body>
+
     <div id="start_div" style="display: none;" class="center">
-        <h1>Sign into Reddit</h1>
+        <h1>Sign in to Reddit</h1>
+        <p>Your data never leaves your computer.</p>
         <button class="btn btn-primary btn-sm" onclick="signInButton()">Sign in</button>
     </div>
 
@@ -25,6 +27,10 @@
       <h1 id="overview_title">Welcome, USERNAME!</h1>
       <p id="overview_loaded_count">Loaded ? subreddits, ? saved and ? hidden.</p>
       <button class="btn btn-primary btn-sm" onclick="saveToDiskButton()">Save to disk</button>
+    </div>
+
+    <div id="footer_div" class="footer">
+      <p>Fully <a href="https://github.com/TriLinder/RedditManager" target="_blank">open-source</a>!</p>
     </div>
 
     <script src="/script.js"></script>
