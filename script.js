@@ -23,7 +23,7 @@ async function authenticatedRequest(url) {
     return json;
 }
 
-async function downloadFullListing(endpoint) {
+async function downloadFullListing(endpoint, updateDomListingCounter=false) {
     let lastDownloaded = null;
     let finished = false;
 
@@ -36,6 +36,10 @@ async function downloadFullListing(endpoint) {
         
         listing = listing.concat(children);
         
+        if (updateDomListingCounter) {
+            document.getElementById("listing_counter").textContent = `(${listing.length})`;
+        }
+
         lastDownloaded = json["data"]["after"]
         
         if (children.length != 100) {
@@ -89,13 +93,19 @@ function parseUrlParameters() {
 
 async function downloadInfo() {
     // Download user
+    document.getElementById("processing_waiting_text").textContent = "Downloading user info";
+    document.getElementById("listing_counter").textContent = "";
     user = await authenticatedRequest("https://oauth.reddit.com/api/v1/me");
 
     // Download subreddits
-    subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber");
+    document.getElementById("processing_waiting_text").textContent = "Processing subreddits ";
+    document.getElementById("listing_counter").textContent = "(0)";
+    subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber", updateDomListingCounter=true);
 
     // Download saved
-    saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`);
+    document.getElementById("processing_waiting_text").textContent = "Processing saved ";
+    document.getElementById("listing_counter").textContent = "(0)";
+    saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`, updateDomListingCounter=true);
 }
 
 function generateAuthUrl() {
