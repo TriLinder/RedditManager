@@ -3,6 +3,10 @@ let stage = null;
 
 let parameters = {};
 
+let user = {};
+let subreddits = [];
+let saved = [];
+
 async function getJson(url, options={}) {
     let object = await fetch(url, options);
     let json = await object.json();
@@ -19,6 +23,29 @@ async function authenticatedRequest(url) {
     return json;
 }
 
+async function downloadFullListing(endpoint) {
+    let lastDownloaded = null;
+    let finished = false;
+
+    let listing = [];
+
+    while (!finished) {
+        const url = `${endpoint}?limit=100&after=${lastDownloaded}`;
+        let json = await authenticatedRequest(url);
+        let children = json["data"]["children"];
+        
+        listing = listing.concat(children);
+        
+        lastDownloaded = json["data"]["after"]
+        
+        if (children.length != 100) {
+            finished = true;
+        }
+    }
+
+    return listing;
+}
+
 async function loadConfig() {
     config = await getJson("/config.json");
 }
@@ -32,6 +59,7 @@ async function setStage() {
             document.getElementById("wait_div").style.display = "block";
 
             parseUrlParameters();
+            downloadInfo();
 
             break;
     }
@@ -53,6 +81,17 @@ function parseUrlParameters() {
     function(parameter) {
         parameters[parameter.split("=")[0]] = parameter.split("=")[1];
     });
+}
+
+async function downloadInfo() {
+    // Download user
+    user = await authenticatedRequest("https://oauth.reddit.com/api/v1/me");
+
+    // Download subreddits
+    subreddits = await downloadFullListing("https://oauth.reddit.com/subreddits/mine/subscriber");
+
+    // Download saved
+    saved = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/saved`);
 }
 
 function generateAuthUrl() {
