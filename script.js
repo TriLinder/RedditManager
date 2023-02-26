@@ -81,6 +81,10 @@ function parseUrlParameters() {
     function(parameter) {
         parameters[parameter.split("=")[0]] = parameter.split("=")[1];
     });
+
+    if (parameters["error"]) {
+        window.location = generateAuthUrl();
+    }
 }
 
 async function downloadInfo() {
