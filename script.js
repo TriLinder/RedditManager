@@ -194,7 +194,7 @@ async function restoreBackup() {
     document.getElementById("restore_progress_bar").max = itemsToRestore;
     document.getElementById("restore_progress_bar").value = 0;
 
-    // Helper functions for later
+    // Helper functions
     const updateProgressBar = function(value) {
         document.getElementById("restore_progress_bar").value += 1; 
     }
@@ -210,8 +210,8 @@ async function restoreBackup() {
         return fullNames
     }
 
-    const restorePosts = async function(loadedItems, originalItems, url) {
-        // Find the fullnames. Reverse the array, so the posts end up in the right order
+    const restoreItems = async function(loadedItems, originalItems, url, data_key="id") {
+        // Find the fullnames. Reverse the array, so the items end up in the right order
         const loadedFullNames = getFullnames(loadedItems).reverse();
         const originalFullNames = getFullnames(originalItems);
 
@@ -223,7 +223,9 @@ async function restoreBackup() {
             // Skip over existing items
             if (originalFullNames.indexOf(fullName) == -1) {
                 const formData = new FormData();
-                formData.append("id", fullName);
+
+                formData.append("action", "sub"); // For subreddits
+                formData.append(data_key, fullName);
 
                 try {
                     await authenticatedRequest(url, options={method: "post", body: formData});
@@ -235,25 +237,10 @@ async function restoreBackup() {
         }
     }
 
-    // Restore subreddits
-    if (restoreSubreddits) {
-        // Find the fullnames
-        const fullNames = getFullnames(loadedSubreddits);
-
-        // Make a large api request with all fullnames
-        const formData = new FormData();
-
-        formData.append("action", "sub");
-        formData.append("sr", fullNames.toString());
-
-        await authenticatedRequest("https://oauth.reddit.com/api/subscribe", options={method: "post", body: formData});
-        updateProgressBar(loadedSubreddits.length);
-    }
-
-    // Restore saved & hidden
-
-    if (restoreSaved) { await restorePosts(loadedSaved, saved, "https://oauth.reddit.com/api/save"); };
-    if (restoreHidden) { await restorePosts(loadedHidden, hidden, "https://oauth.reddit.com/api/hide"); };
+    // Restore subreddits, saved and hidden
+    if (restoreSubreddits) { await restoreItems(loadedSubreddits, subreddits, "https://oauth.reddit.com/api/subscribe", "sr"); };
+    if (restoreSaved) { await restoreItems(loadedSaved, saved, "https://oauth.reddit.com/api/save"); };
+    if (restoreHidden) { await restoreItems(loadedHidden, hidden, "https://oauth.reddit.com/api/hide"); };
 }
 
 function parseDataJson(string, updateDom=false) {
