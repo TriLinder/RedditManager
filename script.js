@@ -310,7 +310,7 @@ function handleFileSelection(event) {
 }
 
 function restoreBackupButton() {
-    if (confirm("PLACEHOLDER WARNING")) {
+    if (confirm("You are about to restore your Reddit account from a backup. Are you sure you want to continue? \n\nNOTE: No information should be lost, however your account could get cluttered.")) {
         switchStage("backup_restoring");
     }
     else {
