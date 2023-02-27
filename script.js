@@ -22,10 +22,8 @@ async function getJson(url, options={}) {
     return json
 }
 
-async function authenticatedRequest(url) {
-    options = {
-        headers: {"Authorization": `Bearer ${parameters["access_token"]}`}
-    }
+async function authenticatedRequest(url, options={}) {
+    options["headers"] = {"Authorization": `Bearer ${parameters["access_token"]}`}
 
     let json = await getJson(url, options);
     return json;
@@ -174,6 +172,64 @@ async function restoreBackup() {
     // Configure DOM progress bar
     document.getElementById("restore_progress_bar").max = itemsToRestore;
     document.getElementById("restore_progress_bar").value = 0;
+
+    // Helper functions for later
+    const updateProgressBar = function(value) {
+        document.getElementById("restore_progress_bar").value += 1; 
+    }
+
+    const getFullnames = function(list) {
+        let fullNames = [];
+
+        list.forEach(function(item) {
+            const fullName = item["data"]["name"];
+            fullNames.push(fullName);
+        })
+
+        return fullNames
+    }
+
+    const restorePosts = async function(loadedItems, originalItems, url) {
+        // Find the fullnames. Reverse the array, so the posts end up in the right order
+        const loadedFullNames = getFullnames(loadedItems).reverse();
+        const originalFullNames = getFullnames(originalItems);
+
+        // Make an api request for every item
+        // Avoiding .foreach because of async operations
+        for (let i = 0; i < loadedFullNames.length; i++) {
+            const fullName = loadedFullNames[i];
+            
+            // Skip over existing items
+            if (originalFullNames.indexOf(fullName) == -1) {
+                const formData = new FormData();
+                formData.append("id", fullName);
+
+                await authenticatedRequest(url, options={method: "post", body: formData});
+            }
+
+            updateProgressBar(1);
+        }
+    }
+
+    // Restore subreddits
+    if (restoreSubreddits) {
+        // Find the fullnames
+        const fullNames = getFullnames(loadedSubreddits);
+
+        // Make a large api request with all fullnames
+        const formData = new FormData();
+
+        formData.append("action", "sub");
+        formData.append("sr", fullNames.toString());
+
+        await authenticatedRequest("https://oauth.reddit.com/api/subscribe", options={method: "post", body: formData});
+        updateProgressBar(loadedSubreddits.length);
+    }
+
+    // Restore saved & hidden
+
+    if (restoreSaved) { await restorePosts(loadedSaved, saved, "https://oauth.reddit.com/api/save"); };
+    if (restoreHidden) { await restorePosts(loadedHidden, hidden, "https://oauth.reddit.com/api/hide"); };
 }
 
 function parseDataJson(string, updateDom=false) {
