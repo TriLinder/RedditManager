@@ -68,6 +68,7 @@ async function setStage() {
     document.getElementById("overview_div").style.display = "none";
     document.getElementById("file_div").style.display = "none";
     document.getElementById("file_overview_div").style.display = "none";
+    document.getElementById("backup_restoring_div").style.display = "none";
     
     switch(stage) {
         case "start":
@@ -101,6 +102,17 @@ async function setStage() {
         case "file_overview":
             document.getElementById("file_overview_div").style.display = "block";
 
+            document.getElementById("file_subreddits_checkbox").checked = false;
+            document.getElementById("file_saved_checkbox").checked = false;
+            document.getElementById("file_hidden_checkbox").checked = false;
+
+            break;
+
+        case "backup_restoring":
+            document.getElementById("backup_restoring_div").style.display = "block";
+            
+            await restoreBackup();
+        
             break;
     }
 }
@@ -145,6 +157,23 @@ async function downloadInfo() {
     document.getElementById("processing_waiting_text").textContent = "Processing hidden ";
     document.getElementById("listing_counter").textContent = "(0)";
     hidden = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/hidden`, updateDomListingCounter=true);
+}
+
+async function restoreBackup() {
+    // Get configuration
+    const restoreSubreddits = document.getElementById("file_subreddits_checkbox").checked;
+    const restoreSaved = document.getElementById("file_saved_checkbox").checked;
+    const restoreHidden = document.getElementById("file_hidden_checkbox").checked;
+
+    // Count items to restore
+    let itemsToRestore = 0;
+    if (restoreSubreddits) { itemsToRestore += subreddits.length }
+    if (restoreSaved) { itemsToRestore += saved.length }
+    if (restoreHidden) { itemsToRestore += hidden.length }
+
+    // Configure DOM progress bar
+    document.getElementById("restore_progress_bar").max = itemsToRestore;
+    document.getElementById("restore_progress_bar").value = 0;
 }
 
 function parseDataJson(string, updateDom=false) {
@@ -211,6 +240,15 @@ function handleFileSelection(event) {
 
     reader.onload = function(event) { parseDataJson(event.target.result, updateDom=true); };
     reader.readAsText(file);
+}
+
+function restoreBackupButton() {
+    if (confirm("PLACEHOLDER WARNING")) {
+        switchStage("backup_restoring");
+    }
+    else {
+        switchStage("overview");
+    }
 }
 
 function generateAuthUrl() {
