@@ -59,10 +59,12 @@ async function setStage() {
     document.getElementById("start_div").style.display = "none";
     document.getElementById("wait_div").style.display = "none";
     document.getElementById("overview_div").style.display = "none";
+    document.getElementById("file_div").style.display = "none";
     
     switch(stage) {
         case "start":
             document.getElementById("start_div").style.display = "block";
+
             break;
         
         case "wait":
@@ -81,6 +83,11 @@ async function setStage() {
 
             document.getElementById("overview_title").textContent = `Welcome, ${user.name}!`;
             document.getElementById("overview_loaded_count").textContent = `Loaded ${subreddits.length} subreddits, ${saved.length} saved and ${hidden.length} hidden.`;
+
+            break;
+
+        case "file":
+            document.getElementById("file_div").style.display = "block";
 
             break;
     }
@@ -148,6 +155,11 @@ function saveToDiskButton() {
     const fileName = `${user.name}_${Math.round(Date.now() / 1000)}.json`;
 
     downloadStringAsFile(dataString, fileName);
+}
+
+function switchStage(newStage) {
+    stage = newStage;
+    setStage();
 }
 
 function generateAuthUrl() {
