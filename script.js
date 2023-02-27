@@ -67,6 +67,7 @@ async function setStage() {
     document.getElementById("file_div").style.display = "none";
     document.getElementById("file_overview_div").style.display = "none";
     document.getElementById("backup_restoring_div").style.display = "none";
+    document.getElementById("finished_restoring_div").style.display = "none";
     
     switch(stage) {
         case "start":
@@ -110,6 +111,12 @@ async function setStage() {
             document.getElementById("backup_restoring_div").style.display = "block";
             
             await restoreBackup();
+            switchStage("finished_restoring");
+        
+            break;
+
+        case "finished_restoring":
+            document.getElementById("finished_restoring_div").style.display = "block";
         
             break;
     }
@@ -131,7 +138,7 @@ function parseUrlParameters() {
     });
 
     if (parameters["error"]) {
-        window.location = generateAuthUrl();
+        switchStage("start");
     }
 }
 

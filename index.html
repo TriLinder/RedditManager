@@ -53,7 +53,6 @@
         <input type="file" id="file_selection">
         Choose file
       </label>
-
     </div>
 
     <div id="file_overview_div" style="display: none;" class="center">
@@ -77,12 +76,16 @@
 
       <button class="btn btn-secondary btn-sm" onclick="switchStage('overview')">Go back</button>
       <button class="btn btn-danger btn-sm" onclick="restoreBackupButton()">Restore backup</button>
-
     </div>
 
     <div id="backup_restoring_div" style="display: none;" class="center">
       <h1>Restoring..</h1>
       <progress value="50" max="100" id="restore_progress_bar"></progress>
+    </div>
+
+    <div id="finished_restoring_div" style="display: none;" class="center">
+      <h1>Finished restoring</h1>
+      <button class="btn btn-danger btn-sm" onclick="switchStage('start')">Log out</button>
     </div>
 
     <div id="footer_div" class="footer">
