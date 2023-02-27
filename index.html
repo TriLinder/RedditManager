@@ -50,11 +50,35 @@
       <button class="btn btn-secondary btn-sm" onclick="switchStage('overview')">Go back</button>
 
       <label class="btn btn-primary btn-sm">
-        <input type="file" class="file_upload">
+        <input type="file" id="file_selection">
         Choose file
       </label>
 
     </div>
+
+    <div id="file_overview_div" style="display: none;" class="center">
+      <h1>File loaded</h1>
+      <p>Choose categories to load:</p>
+
+      <label>
+        <input type="checkbox">
+        <span id="file_subreddit_counter">Subreddits (5)</span>
+      </label>
+
+      <label>
+        <input type="checkbox">
+        <span id="file_saved_counter">Saved (5)</span>
+      </label>
+
+      <label>
+        <input type="checkbox">
+        <span id="file_hidden_counter">Hidden (5)</span>
+      </label> <br> <br>
+
+      <button class="btn btn-secondary btn-sm" onclick="switchStage('overview')">Go back</button>
+      <button class="btn btn-danger btn-sm">Restore backup</button>
+
+    </div> 
 
     <div id="footer_div" class="footer">
       <p>Fully <a href="https://github.com/TriLinder/RedditManager" target="_blank">open-source</a>!</p>

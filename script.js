@@ -8,6 +8,13 @@ let subreddits = [];
 let saved = [];
 let hidden = [];
 
+let loadedUser;
+let loadedTime;
+let loadedVersion;
+let loadedSubreddits;
+let loadedSaved;
+let loadedHidden;
+
 async function getJson(url, options={}) {
     let object = await fetch(url, options);
     let json = await object.json();
@@ -60,6 +67,7 @@ async function setStage() {
     document.getElementById("wait_div").style.display = "none";
     document.getElementById("overview_div").style.display = "none";
     document.getElementById("file_div").style.display = "none";
+    document.getElementById("file_overview_div").style.display = "none";
     
     switch(stage) {
         case "start":
@@ -73,8 +81,7 @@ async function setStage() {
             parseUrlParameters();
             await downloadInfo();
             
-            stage = "overview";
-            setStage();
+            switchStage("overview");
 
             break;
 
@@ -90,18 +97,21 @@ async function setStage() {
             document.getElementById("file_div").style.display = "block";
 
             break;
+
+        case "file_overview":
+            document.getElementById("file_overview_div").style.display = "block";
+
+            break;
     }
 }
 
 async function findInitialStage() {
     if (location.hash == "") {
-        stage = "start";
+        switchStage("start");
     }
     else {
-        stage = "wait";
+        switchStage("wait");
     }
-
-    setStage();
 }
 
 function parseUrlParameters() {
@@ -137,6 +147,39 @@ async function downloadInfo() {
     hidden = await downloadFullListing(`https://oauth.reddit.com/user/${user.name}/hidden`, updateDomListingCounter=true);
 }
 
+function parseDataJson(string, updateDom=false) {
+    let json;
+    
+    try {
+        json = JSON.parse(string);
+    }
+    catch {
+        alert("Not a valid JSON file. Please try again with a different file.");
+        return;
+    }
+
+    try {
+        loadedUser = json["user"];
+        loadedTime = json["time"];
+        loadedVersion = json["version"];
+        loadedSubreddits = json["data"]["subreddits"];
+        loadedSaved = json["data"]["saved"];
+        loadedHidden = json["data"]["hidden"];
+    }
+    catch {
+        alert("Missing fields. Please try again with a different file.");
+        return;
+    }
+
+    if (updateDom) {
+        document.getElementById("file_subreddit_counter").textContent = `Subreddits (${loadedSubreddits.length})`;
+        document.getElementById("file_saved_counter").textContent = `Saved (${loadedSaved.length})`;
+        document.getElementById("file_hidden_counter").textContent = `Hidden (${loadedHidden.length})`;
+
+        switchStage("file_overview");
+    }
+}
+
 function generateDataJson() {
     return {"user": user, "time": Math.round(Date.now() / 1000), "version": config["version"], "data": {"subreddits": subreddits, "saved": saved, "hidden": hidden}};
 }
@@ -162,6 +205,14 @@ function switchStage(newStage) {
     setStage();
 }
 
+function handleFileSelection(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(event) { parseDataJson(event.target.result, updateDom=true); };
+    reader.readAsText(file);
+}
+
 function generateAuthUrl() {
     const client_id = config["client_id"];
     let scope = config["scope"];
@@ -180,4 +231,6 @@ function signInButton() {
 window.onload = async function () {
     await loadConfig();
     findInitialStage();
+
+    document.getElementById("file_selection").addEventListener("change", handleFileSelection, false);
 }
