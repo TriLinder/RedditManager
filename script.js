@@ -138,8 +138,14 @@ function parseUrlParameters() {
     });
 
     if (parameters["error"]) {
-        switchStage("start");
+        window.location = generateAuthUrl();
+        return;
     }
+
+    setTimeout(function() {
+        alert("Your token has expired.");
+        window.location = generateAuthUrl();
+    }, parseInt(parameters["expires_in"]) * 1000)
 }
 
 async function downloadInfo() {
