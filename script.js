@@ -186,9 +186,9 @@ async function restoreBackup() {
 
     // Count items to restore
     let itemsToRestore = 0;
-    if (restoreSubreddits) { itemsToRestore += subreddits.length }
-    if (restoreSaved) { itemsToRestore += saved.length }
-    if (restoreHidden) { itemsToRestore += hidden.length }
+    if (restoreSubreddits) { itemsToRestore += loadedSubreddits.length }
+    if (restoreSaved) { itemsToRestore += loadedSaved.length }
+    if (restoreHidden) { itemsToRestore += loadedHidden.length }
 
     // Configure DOM progress bar
     document.getElementById("restore_progress_bar").max = itemsToRestore;
