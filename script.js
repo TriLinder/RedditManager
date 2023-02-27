@@ -146,7 +146,21 @@ async function downloadInfo() {
     // Download user
     document.getElementById("processing_waiting_text").textContent = "Processing user info";
     document.getElementById("listing_counter").textContent = "";
-    user = await authenticatedRequest("https://oauth.reddit.com/api/v1/me");
+    try {
+        user = await authenticatedRequest("https://oauth.reddit.com/api/v1/me");
+    }
+    catch {
+        let errorMessage = "";
+        errorMessage += "Request to Reddit API failed. \n"
+        errorMessage += "Make sure you're not using any ad-blocking extensions or privacy/tracking protections. \n"
+        errorMessage += "Especially if you're using a privacy-friendly browser like Firefox or Brave. \n\n"
+        errorMessage += "RedditManager is open-source and doesn't steal your data. \n\n"
+        errorMessage += "Disable this software and try again."
+
+        alert(errorMessage);
+
+        switchStage("start");
+    }
 
     // Download subreddits
     document.getElementById("processing_waiting_text").textContent = "Processing subreddits ";
@@ -211,7 +225,10 @@ async function restoreBackup() {
                 const formData = new FormData();
                 formData.append("id", fullName);
 
-                await authenticatedRequest(url, options={method: "post", body: formData});
+                try {
+                    await authenticatedRequest(url, options={method: "post", body: formData});
+                }
+                catch {}
             }
 
             updateProgressBar(1);
