@@ -337,5 +337,6 @@ window.onload = async function () {
     await loadConfig();
     findInitialStage();
 
+    document.getElementById("title_element").innerHTML = `RedditManager v${config["version"]["tag"]}`;
     document.getElementById("file_selection").addEventListener("change", handleFileSelection, false);
 }
