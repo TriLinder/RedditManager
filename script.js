@@ -58,6 +58,10 @@ async function downloadFullListing(endpoint, updateDomListingCounter=false) {
 
 async function loadConfig() {
     config = await getJson("/config.json");
+
+    if (config["client_id"] == "YOUR_CLIENT_ID_HERE") {
+        alert("You have not supplied your own client id for the Reddit API. \n\nPlease do so by modifying the config.json file. \nIf you've already done so, make sure the config file isn't being cached. \n\nSee the project README (the \"open-source\" link in the footer) for more information.");
+    }
 }
 
 async function setStage() {

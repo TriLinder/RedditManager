@@ -1,5 +1,5 @@
 {
-    "client_id": "XT4kStbN_uBWNVIJz5JFbw",
+    "client_id": "YOUR_CLIENT_ID_HERE",
     "scope": "identity+subscribe+save+report+mysubreddits+history",
-    "version": {"numeric": 1, "tag": "1.0.0"}
+    "version": {"numeric": 2, "tag": "1.1.0"}
 }
