@@ -347,6 +347,8 @@ window.onload = async function () {
     await loadConfig();
     findInitialStage();
 
+    alert("Please note, that because of the Reddit API changes (see the project README), this project is no longer updated. \n\nUse at your own risk.");
+
     document.getElementById("title_element").innerHTML = `RedditManager v${config["version"]["tag"]}`;
     document.getElementById("file_selection").addEventListener("change", handleFileSelection, false);
 }
