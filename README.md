@@ -2,7 +2,7 @@
 
 Due to the [API changes made by Reddit](https://www.reddit.com/r/apolloapp/comments/13ws4w3/had_a_call_with_reddit_to_discuss_pricing_bad/), and their ridiculous prices, it's no longer feasible for this project to exist. Nor do I want to support their platform any longer.
 
-If, by any chance, you still want to use this application, you'll need to provide your own API client ID in the `config.json` file. But I can't provide any assurance, that this app will work into the future. I highly recommend considering switching to an alternative platform, like [Lemmy](https://join-lemmy.org/).
+If, by any chance, you still want to use this application, you'll need to provide your own API client ID in the `config.json` file. But I can't provide any assurance, that this app will work into the future. I highly recommend considering switching to a different platform, like [Lemmy](https://join-lemmy.org/) or [Kbin](https://kbin.pub/).
 
 ---
 
