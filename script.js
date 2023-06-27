@@ -58,6 +58,10 @@ async function downloadFullListing(endpoint, updateDomListingCounter=false) {
 
 async function loadConfig() {
     config = await getJson("/config.json");
+
+    if (config["client_id"] == "YOUR_CLIENT_ID_HERE") {
+        alert("You have not supplied your own client ID for the Reddit API. \n\nPlease do so by modifying the config.json file. \nIf you've already done so, make sure the config file isn't being cached. \n\nSee the project README (the \"open-source\" link in the footer) for more information.");
+    }
 }
 
 async function setStage() {
@@ -342,6 +346,8 @@ function signInButton() {
 window.onload = async function () {
     await loadConfig();
     findInitialStage();
+
+    alert("Please note, that due to the Reddit API changes (see the project README by clicking on the link in the footer), this project is no longer updated. \n\nUse at your own risk.");
 
     document.getElementById("title_element").innerHTML = `RedditManager v${config["version"]["tag"]}`;
     document.getElementById("file_selection").addEventListener("change", handleFileSelection, false);
